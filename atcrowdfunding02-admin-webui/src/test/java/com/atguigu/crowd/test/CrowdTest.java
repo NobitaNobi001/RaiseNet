@@ -2,6 +2,7 @@ package com.atguigu.crowd.test;
 
 import com.atguigu.crowd.entity.Admin;
 import com.atguigu.crowd.mapper.AdminMapper;
+import com.atguigu.crowd.service.api.AdminService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import java.sql.SQLException;
  * @date 21/3/21 16:03
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-persist-mybatis.xml"})
+@ContextConfiguration(locations = {"classpath:spring-persist-mybatis.xml","classpath:spring-persist-tx.xml"})
 public class CrowdTest {
 
     @Autowired
@@ -27,6 +28,15 @@ public class CrowdTest {
 
     @Autowired
     private AdminMapper adminMapper;
+
+    @Autowired
+    private AdminService adminService;
+
+    @Test
+    public void testTx() {
+        Admin admin = new Admin(null, "jerry", "123456", "杰瑞", "jerry@qq.com", null);
+        adminService.saveAdmin(admin);
+    }
 
     @Test
     public void testLog() {

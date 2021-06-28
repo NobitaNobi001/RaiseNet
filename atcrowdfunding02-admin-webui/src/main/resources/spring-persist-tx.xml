@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--配置自动扫描的包-->
+    <context:component-scan base-package="com.atguigu.crowd.service"/>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--装配数据源-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--配置事务切面-->
+    <aop:config>
+        <!--避免把Spring Security的UserDetailsService加入到事务控制-->
+        <aop:pointcut id="txPointcut" expression="execution(* *..*ServiceImpl.*(..))"/>
+
+        <!--将切入点表达式和事务通知关联起来-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
+    </aop:config>
+
+    <!--配置事务通知-->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <!--配置事务属性-->
+        <tx:attributes>
+            <!--查询方法:只读属性-->
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
+            <tx:method name="count*" read-only="true"/>
+
+            <!--增删改:配置事务传播行为 回滚异常-->
+            <!--propagation属性：
+                    REQUIRED：默认值，表示当前方法必须工作在事务中，如果当前线程上没有已经开启的事务，则自己开新事务，如果已经有了，就使用已有的事务
+                    REQUIRES_NEW：表示当前方法必须工作在事务中，如果当前线程上没有已经开启的事务，则自己开新事务，如果已经有了，仍在自己开启的事务中运行
+                rollback-for属性：配置事务方法针对什么异常回滚
+                    默认是运行时异常回滚
+                    配置为编译时异常都回滚
+            -->
+            <tx:method name="save*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="update*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="remove*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="batch*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+</beans>

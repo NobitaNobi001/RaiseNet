@@ -9,7 +9,7 @@
     </appender>
 
     <!--设置全局日志级别:debug info warn error-->
-    <root level="INFO">
+    <root level="DEBUG">
         <!--指定打印日志的appender-->
         <appender-ref ref="STDOUT"/>
     </root>
