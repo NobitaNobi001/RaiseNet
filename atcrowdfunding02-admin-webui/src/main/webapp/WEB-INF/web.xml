@@ -53,7 +53,8 @@
 
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>*.html</url-pattern>
+        <url-pattern>*.json</url-pattern>
     </servlet-mapping>
 
 </web-app>
